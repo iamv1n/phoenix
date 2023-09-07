@@ -1,2 +1,2 @@
-# Kryptex
-An Asymmetric Vector Lattice based Cryptographic Encryption Algorithm 
+# PHOENIX
+## Post-quantum Heirarchical Obfuscation for Enhanced Networked eXchanges

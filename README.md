@@ -30,3 +30,19 @@ TBC
 	- Key-Generation
 	- Encryption
 	- Decryption
+
+## Contributing
+Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
+
+1. Fork this repository.
+2. Create a new branch (git checkout -b feature)
+3. Make your changes.
+4. Commit your changes (git commit -am 'Add new feature')
+5. Push to the branch (git push origin feature)
+6. Create a new Pull Request.
+
+## Support
+If you encounter any issues or have questions about this project, feel free to [contact me](mailto:mail@vineet.site) or [open an issue](https://github.com/iamv1n/phoenix/issues/new).
+
+## License
+This project is licensed under the [GNU General Public License v3.0](./LICENSE). You are free to use and modify this project as needed.

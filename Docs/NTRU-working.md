@@ -32,7 +32,7 @@ $$ B(d) = \left \{ \sum_{k=0}^{N-1} f_k X^k : f_i = 0 \text{ or } 1, \sum_{k=0}^
 In NTRU, the parameters are chosen as follows:
 
 - $N$ is a sufficiently large prime,
-- $p$ and $q$ are relatively prime numbers such that $ q $ is much larger than $ p $.
+- $p$ and $q$ are relatively prime numbers such that $q$ is much larger than $p$.
 - $d_f$, $d_g$, and $d_r$ are integers such that the polynomials from which the private keys are selected are from the set $B(d_f)$ and $B(d_g)$.
 - The set $B(d_r)$ contains the polynomials from which the blinding value used during encryption is selected.
 

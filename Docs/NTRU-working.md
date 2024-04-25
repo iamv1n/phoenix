@@ -45,7 +45,7 @@ is the plaintext space.
 To generate keys in the NTRU cryptosystem:
 
 1. **Choose Polynomials**:
-   - Randomly select a polynomial $f$ from the set $B(d_f)$ such that $f$ has an inverse modulo $p$ and $q$.
+   - Randomly select a polynomial $f$ from the set $B(d_f)$ such that $f$ has an inverse modulo $p$ and $q$. To Generate and Check if $f$ inverse modulo $p$ and $q$ exists we use [Bezouts Identity](./Generate_poly_Inverse.md).
    - Set $f_p \equiv f^{-1} \pmod{p}$ and $f_q \equiv f^{-1} \pmod{q}$.
    - Randomly choose a polynomial $g$ from the set $B(d_g)$.
 

@@ -1,5 +1,5 @@
 from sympy import symbols, invert, poly, GF, Poly
-from NTRUpy.NTRUutil import *
+from phpy.ph_util import *
 # from NTRUutil import *
 import numpy as np
 
@@ -9,7 +9,7 @@ import numpy as np
 # inverse of fmodp and fmodq
 # inverse of polynomial
 
-class NTRUdecrypt:
+class ph_decrypt:
     def __init__(self, N = 503, p = 3, q = 257, df = 61, dg = 20, dr = 18):
         self.N = N
         self.p = p

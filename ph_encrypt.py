@@ -1,9 +1,9 @@
 from sympy import symbols, invert, Poly, GF
-from NTRUpy.NTRUutil import *
+from phpy.ph_util import *
 # from NTRUutil import *
 import numpy as np
 
-class NTRUencrypt:
+class ph_encrypt:
     def __init__(self, N = 503, p = 3, q = 257, dr = 18):
         self.N = N
         self.p = p

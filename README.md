@@ -5,7 +5,7 @@ Phoenix represents a significant advancement in encryption technology, particula
 - [What is NTRU?](#what-is-ntru)
 - [Usage of this Python Module](#module-usage)
 - [Docs](#other-docs)
-	- [Algorithm](./Docs/NTRU%20Algorithm.md)
+	- [Algorithm](./Docs/NTRU-working.md)
 	- [Mathematical Requirements](./Docs/Required%20Mathematics%20for%20NTRU.md)
 
 
@@ -23,10 +23,12 @@ The emergence of [Shor's Algorithm](https://en.wikipedia.org/wiki/Shor%27s_algor
 ### Solution
 
 The solution is to come up with a different Cryptographic System which is based on either a different NP-Hard Problem or a completely different mathematical paradigm which maps the plain-text to the cipher-text in a manner which is not traceable.
+
 ## Module Usage
 TBC
+
 ## Other Docs
-- [NTRU Algorithm](./Docs/NTRU%20Algorithm.md)
+- [NTRU Algorithm](./Docs/NTRU-working.md)
 	- Key-Generation
 	- Encryption
 	- Decryption

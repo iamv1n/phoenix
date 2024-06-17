@@ -8,4 +8,4 @@ PyYAML==6.0.1
 requests==2.31.0
 shellescape==3.8.1
 sympy==1.12
-urllib3==2.1.0
+urllib3==2.2.2

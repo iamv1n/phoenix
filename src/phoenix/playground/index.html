@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phoenix Playground</title>
+<style>
+  :root {
+    --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1b19; --muted: #6b6860;
+    --line: #dedbd2; --accent: #c2410c; --accent-ink: #ffffff;
+    --ok: #15803d; --bad: #b91c1c; --code: #f1efe9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151412; --panel: #1f1e1b; --ink: #ece9e2; --muted: #9a968c;
+      --line: #34322d; --accent: #f97316; --accent-ink: #1a1207;
+      --ok: #4ade80; --bad: #f87171; --code: #282622;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 64px; }
+  header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+  header p { margin: 4px 0 0; color: var(--muted); }
+  .warn {
+    margin: 16px 0; padding: 10px 14px; border: 1px solid var(--line);
+    border-left: 4px solid var(--accent); border-radius: 6px; background: var(--panel);
+    font-size: 14px;
+  }
+  nav { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line); margin-top: 20px; }
+  nav button {
+    background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted);
+    padding: 10px 14px; font: inherit; cursor: pointer;
+  }
+  nav button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+  section { display: none; padding-top: 20px; }
+  section.active { display: block; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+  .card h2 { margin: 0 0 4px; font-size: 16px; }
+  .card p.hint { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+  textarea, input, select {
+    width: 100%; background: var(--code); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 6px; padding: 8px 10px; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  textarea { min-height: 110px; resize: vertical; word-break: break-all; }
+  input.text, textarea.text { font-family: inherit; font-size: 14px; word-break: normal; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  button.act {
+    background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 6px;
+    padding: 8px 14px; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  button.ghost { background: none; color: var(--ink); border: 1px solid var(--line); }
+  button:disabled { opacity: .55; cursor: wait; }
+  .status { font-size: 13px; color: var(--muted); min-height: 20px; margin-top: 10px; overflow-wrap: anywhere; }
+  .status.ok { color: var(--ok); } .status.bad { color: var(--bad); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 13px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; overflow-wrap: anywhere; }
+  .scroll { overflow-x: auto; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); }
+  .pill.ok { color: var(--ok); border-color: var(--ok); } .pill.bad { color: var(--bad); border-color: var(--bad); }
+  code { background: var(--code); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Phoenix Playground</h1>
+    <p>Poke at NTRU lattice-based encryption using the real library running on this machine.</p>
+  </header>
+  <div class="warn">
+    Learning tool only. Phoenix is unaudited and not constant time, and this page sends keys to a
+    local server in the clear. Use throwaway keys here.
+  </div>
+
+  <nav role="tablist">
+    <button role="tab" data-tab="encrypt" aria-selected="true">Encrypt &amp; decrypt</button>
+    <button role="tab" data-tab="toy" aria-selected="false">Step through the maths</button>
+    <button role="tab" data-tab="bench" aria-selected="false">Test &amp; benchmark</button>
+    <button role="tab" data-tab="params" aria-selected="false">Parameter sets</button>
+  </nav>
+
+  <section id="tab-encrypt" class="active">
+    <div class="grid">
+      <div class="card">
+        <h2>1. Keys</h2>
+        <p class="hint">Generate a pair, or paste your own.</p>
+        <label for="kg-params">Parameter set</label>
+        <select id="kg-params"></select>
+        <div class="row"><button class="act" id="kg-run">Generate key pair</button></div>
+        <div class="status" id="kg-status"></div>
+        <label for="pub">Public key</label>
+        <textarea id="pub" spellcheck="false"></textarea>
+        <label for="priv">Private key</label>
+        <textarea id="priv" spellcheck="false"></textarea>
+      </div>
+      <div class="card">
+        <h2>2. Seal</h2>
+        <p class="hint">Encrypts to the public key: NTRU KEM + ChaCha20-Poly1305.</p>
+        <label for="plain">Message</label>
+        <textarea id="plain" class="text">The phoenix rises at dawn.</textarea>
+        <label for="aad">Associated data (authenticated, not encrypted; optional)</label>
+        <input id="aad" class="text" placeholder="e.g. a message id">
+        <div class="row"><button class="act" id="seal-run">Seal</button></div>
+        <div class="status" id="seal-status"></div>
+        <label for="sealed">Sealed message</label>
+        <textarea id="sealed" spellcheck="false"></textarea>
+      </div>
+      <div class="card">
+        <h2>3. Unseal</h2>
+        <p class="hint">Decrypt with the private key. Flip a bit first to watch authentication fail.</p>
+        <div class="row">
+          <button class="act" id="unseal-run">Unseal</button>
+          <button class="act ghost" id="tamper-run">Flip a random bit</button>
+        </div>
+        <div class="status" id="unseal-status"></div>
+        <label for="recovered">Recovered message</label>
+        <textarea id="recovered" class="text" readonly></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-toy">
+    <div class="card">
+      <h2>Textbook NTRU with N = 7, p = 3, q = 41</h2>
+      <p class="hint">
+        Every intermediate polynomial, small enough to check by hand. Leave a field blank for a
+        random choice, or type up to 7 coefficients from the constant term upwards
+        (<code>-1 0 1 1 -1 0 1</code> means x⁶ − x⁴ + x³ + x² − 1).
+      </p>
+      <div class="grid">
+        <div><label for="toy-f">f (three +1, two −1)</label><input id="toy-f" placeholder="random"></div>
+        <div><label for="toy-g">g (two +1, two −1)</label><input id="toy-g" placeholder="random"></div>
+        <div><label for="toy-m">m (message, ternary)</label><input id="toy-m" placeholder="random"></div>
+        <div><label for="toy-r">r (two +1, two −1)</label><input id="toy-r" placeholder="random"></div>
+      </div>
+      <div class="row">
+        <button class="act" id="toy-run">Run</button>
+        <button class="act ghost" id="toy-example">Load the docs example</button>
+        <button class="act ghost" id="toy-clear">Clear</button>
+      </div>
+      <div class="status" id="toy-status"></div>
+      <div class="scroll"><table id="toy-table"></table></div>
+    </div>
+  </section>
+
+  <section id="tab-bench">
+    <div class="card">
+      <h2>Round-trip test and timings</h2>
+      <p class="hint">
+        Each round generates a fresh key pair, encapsulates, decapsulates and checks the secrets
+        match, then flips one ciphertext bit and checks the secret no longer matches.
+      </p>
+      <div class="grid">
+        <div><label for="bench-params">Parameter set</label><select id="bench-params"></select></div>
+        <div><label for="bench-rounds">Rounds (1–200)</label><input id="bench-rounds" type="number" min="1" max="200" value="25"></div>
+      </div>
+      <div class="row"><button class="act" id="bench-run">Run</button></div>
+      <div class="status" id="bench-status"></div>
+      <div class="scroll"><table id="bench-table"></table></div>
+    </div>
+  </section>
+
+  <section id="tab-params">
+    <div class="card">
+      <h2>Built-in parameter sets</h2>
+      <p class="hint">
+        “Worst case” is the largest coefficient p·r·g + f·m can ever have. It must not exceed the
+        limit ⌊(q−1)/2⌋, which is what makes decryption failures impossible.
+      </p>
+      <div class="scroll"><table id="params-table"></table></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+async function api(path, body) {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body || {}),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "request failed");
+  return data;
+}
+
+function setStatus(id, text, kind) {
+  const el = $(id);
+  el.textContent = text;
+  el.className = "status" + (kind ? " " + kind : "");
+}
+
+// Run an action with its button disabled, reporting errors in a status line.
+function bind(buttonId, statusId, action) {
+  $(buttonId).addEventListener("click", async () => {
+    const button = $(buttonId);
+    button.disabled = true;
+    try {
+      await action();
+    } catch (error) {
+      setStatus(statusId, error.message, "bad");
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
+function fillTable(id, headers, rows) {
+  const table = $(id);
+  table.replaceChildren();
+  const head = table.createTHead().insertRow();
+  for (const h of headers) {
+    const th = document.createElement("th");
+    th.textContent = h.label;
+    if (h.cls) th.className = h.cls;
+    head.appendChild(th);
+  }
+  const body = table.createTBody();
+  for (const row of rows) {
+    const tr = body.insertRow();
+    row.forEach((cell, i) => {
+      const td = tr.insertCell();
+      td.textContent = cell;
+      if (headers[i].cls) td.className = headers[i].cls;
+    });
+  }
+}
+
+document.querySelectorAll("nav button").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll("nav button").forEach((t) => t.setAttribute("aria-selected", t === tab));
+    document.querySelectorAll("section").forEach((s) => s.classList.toggle("active", s.id === "tab-" + tab.dataset.tab));
+  });
+});
+
+async function loadParams() {
+  const { params } = await api("/api/params");
+  for (const selectId of ["kg-params", "bench-params"]) {
+    const select = $(selectId);
+    for (const p of params) {
+      const option = new Option(`${p.name}  (N=${p.N}, q=${p.q})`, p.name, p.default, p.default);
+      select.add(option);
+    }
+  }
+  fillTable(
+    "params-table",
+    [
+      { label: "name" }, { label: "N", cls: "num" }, { label: "p", cls: "num" }, { label: "q", cls: "num" },
+      { label: "df", cls: "num" }, { label: "dg", cls: "num" }, { label: "dr", cls: "num" },
+      { label: "worst case", cls: "num" }, { label: "limit", cls: "num" },
+      { label: "public key", cls: "num" }, { label: "KEM ciphertext", cls: "num" }, { label: "seal overhead", cls: "num" },
+    ],
+    params.map((p) => [
+      p.name + (p.default ? " (default)" : ""), p.N, p.p, p.q, p.df, p.dg, p.dr,
+      p.max_coefficient, p.limit, p.public_key_bytes + " B", p.ciphertext_bytes + " B", p.seal_overhead_bytes + " B",
+    ])
+  );
+}
+
+bind("kg-run", "kg-status", async () => {
+  const r = await api("/api/keygen", { params: $("kg-params").value });
+  $("pub").value = r.public;
+  $("priv").value = r.private;
+  setStatus("kg-status", `Generated in ${r.ms} ms — public key ${r.public_bytes} bytes, private key ${r.private_bytes} bytes.`, "ok");
+});
+
+bind("seal-run", "seal-status", async () => {
+  const r = await api("/api/seal", { public: $("pub").value, plaintext: $("plain").value, aad: $("aad").value });
+  $("sealed").value = r.sealed;
+  setStatus("seal-status", `Sealed ${r.plaintext_bytes} bytes into ${r.sealed_bytes} bytes in ${r.ms} ms.`, "ok");
+});
+
+bind("unseal-run", "unseal-status", async () => {
+  $("recovered").value = "";
+  const r = await api("/api/unseal", { private: $("priv").value, sealed: $("sealed").value, aad: $("aad").value });
+  $("recovered").value = r.plaintext;
+  setStatus("unseal-status", `Authenticated and decrypted in ${r.ms} ms.`, "ok");
+});
+
+bind("tamper-run", "unseal-status", async () => {
+  const r = await api("/api/tamper", { sealed: $("sealed").value });
+  $("sealed").value = r.sealed;
+  setStatus("unseal-status", `Flipped bit ${r.bit} of byte ${r.byte}. Now try to unseal.`);
+});
+
+bind("toy-run", "toy-status", async () => {
+  const r = await api("/api/toy", { f: $("toy-f").value, g: $("toy-g").value, m: $("toy-m").value, r: $("toy-r").value });
+  fillTable(
+    "toy-table",
+    [{ label: "" }, { label: "what it is" }, { label: "value", cls: "mono" }],
+    r.steps.map((s) => [s.label, s.note, s.value])
+  );
+  const fits = `largest coefficient of p·r·g + f·m is ${r.largest_coefficient} (limit ${r.params.limit})`;
+  setStatus("toy-status", r.ok ? `Recovered m exactly — ${fits}.` : `Decryption FAILED — ${fits}.`, r.ok ? "ok" : "bad");
+});
+
+$("toy-example").addEventListener("click", () => {
+  $("toy-f").value = "-1 0 1 1 -1 0 1";
+  $("toy-g").value = "0 -1 -1 0 1 0 1";
+  $("toy-m").value = "1 -1 1 1 0 -1 0";
+  $("toy-r").value = "-1 1 0 0 0 -1 1";
+  $("toy-run").click();
+});
+
+$("toy-clear").addEventListener("click", () => {
+  for (const id of ["toy-f", "toy-g", "toy-m", "toy-r"]) $(id).value = "";
+});
+
+bind("bench-run", "bench-status", async () => {
+  setStatus("bench-status", "Running…");
+  const r = await api("/api/benchmark", { params: $("bench-params").value, rounds: Number($("bench-rounds").value) });
+  fillTable(
+    "bench-table",
+    [{ label: "operation" }, { label: "mean (ms)", cls: "num" }, { label: "min (ms)", cls: "num" }, { label: "max (ms)", cls: "num" }],
+    Object.entries(r.timings).map(([name, t]) => [name, t.mean.toFixed(3), t.min.toFixed(3), t.max.toFixed(3)])
+  );
+  const allGood = r.round_trips === r.rounds && r.tamper_rejected === r.rounds;
+  setStatus(
+    "bench-status",
+    `${r.params}: ${r.round_trips}/${r.rounds} round trips matched, ${r.tamper_rejected}/${r.rounds} tampered ciphertexts gave a different secret.`,
+    allGood ? "ok" : "bad"
+  );
+});
+
+loadParams().catch((error) => setStatus("kg-status", error.message, "bad"));
+</script>
+</body>
+</html>

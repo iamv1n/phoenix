@@ -158,7 +158,7 @@ An immutable parameter set, validated on construction. Raises
 | Property | Meaning |
 | --- | --- |
 | `dm` | `N // 3`; KEM messages are drawn from $T(d_m, d_m)$ |
-| `max_coefficient` | Worst-case coefficient of $p\,r \star g + f \star m$ |
+| `max_coefficient` | Worst-case coefficient of $p r \star g + f \star m$ |
 | `q_bits` | Bits per packed coefficient |
 
 ```python
@@ -202,13 +202,13 @@ shorter than `N`.
 ### `keypair_from(params, f, g, rejection_secret=bytes(32)) -> (PublicKey, PrivateKey)`
 
 Build a key pair from explicit polynomials, computing
-$h = p\, f_q \star g \bmod q$. Raises `NotInvertibleError` if `f` has no
+$h = p f_q \star g \bmod q$. Raises `NotInvertibleError` if `f` has no
 inverse modulo `p` or `q`.
 
 ### `encrypt(public_key, m, r=None) -> ndarray`
 
 Return $e = r \star h + m \bmod q$. `m` must have coefficients in
-$[-(p-1)/2,\ (p-1)/2]$. `r` defaults to a fresh random blinding polynomial.
+$[-(p-1)/2, (p-1)/2]$. `r` defaults to a fresh random blinding polynomial.
 
 ### `decrypt(private_key, e) -> ndarray`
 
@@ -235,7 +235,7 @@ length `N`, constant term first.
 | --- | --- |
 | `as_poly(coeffs, N)` | Convert to a zero-padded array of length `N` |
 | `convolve(a, b, modulus=None)` | $a \star b$, optionally reduced |
-| `center(a, modulus)` | Representatives in $(-\text{modulus}/2,\ \text{modulus}/2]$ |
+| `center(a, modulus)` | Representatives in $(-\text{modulus}/2, \text{modulus}/2]$ |
 | `invert(a, modulus)` | $a^{-1}$ for a prime-power modulus; raises `NotInvertibleError` |
 | `format_poly(a, variable="x")` | Human-readable string |
 | `is_prime(n)`, `prime_power(n)` | Small number-theory helpers |
@@ -264,7 +264,8 @@ bytes from the operating system.
 
 ### `sample_ternary(N, ones, minus_ones, xof=None) -> ndarray`
 
-A uniformly random element of $T(\text{ones}, \text{minus\_ones})$.
+A uniformly random ternary polynomial with exactly `ones` coefficients equal
+to $+1$ and `minus_ones` equal to $-1$.
 
 ## `phoenix.playground`
 

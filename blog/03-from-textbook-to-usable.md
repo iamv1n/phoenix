@@ -4,7 +4,9 @@
 
 The [previous post](02-ntru-by-hand.md) ended with a working cryptosystem:
 
-$$e = r \star h + m \pmod q.$$
+$$
+e = r \star h + m \pmod q.
+$$
 
 It is correct. It is, as far as anyone knows, hard to invert without the
 private key. And if you deployed it as is, it would be broken, without
@@ -31,7 +33,9 @@ All examples use a real-size key:
 Encryption is *linear* in the message. Add something to the ciphertext and
 the same thing is added to the plaintext:
 
-$$e + x^k = r \star h + (m + x^k).$$
+$$
+e + x^k = r \star h + (m + x^k).
+$$
 
 ```python
 >>> m = np.zeros(N, dtype=np.int64)
@@ -57,9 +61,11 @@ Evaluate any polynomial at $x = 1$ and you get the sum of its coefficients.
 Evaluation at 1 is also compatible with our multiplication, since $x^N = 1$
 holds when $x = 1$. So:
 
-$$e(1) = r(1)\,h(1) + m(1) \pmod q.$$
+$$
+e(1) = r(1) h(1) + m(1) \pmod q.
+$$
 
-Key generation draws $g$ with equally many $+1$s and $-1$s, so $g(1) = 0$,
+Key generation draws $g$ with as many coefficients $+1$ as $-1$, so $g(1) = 0$,
 and therefore $h(1) = 0$:
 
 ```python
@@ -88,7 +94,7 @@ attacks are assembled from leaks like this.
 
 This is the serious one.
 
-Decryption only works because $p\,r \star g + f \star m$ stays small enough
+Decryption only works because $p r \star g + f \star m$ stays small enough
 not to wrap around modulo $q$. An attacker is not obliged to send honest
 ciphertexts. Suppose they send one crafted so that the result sits right at
 the edge, such that it wraps around *only if a particular coefficient of the
@@ -124,8 +130,8 @@ Inside, three changes do the work.
 
 ### 1. The message is random, and balanced
 
-`encapsulate` picks a random polynomial $m$ with equally many $+1$s and
-$-1$s. Its coefficient sum is always zero, so **Break 2 has nothing to
+`encapsulate` picks a random polynomial $m$ with as many coefficients $+1$
+as $-1$. Its coefficient sum is always zero, so **Break 2 has nothing to
 leak**:
 
 ```python
@@ -138,7 +144,9 @@ leak**:
 
 In the textbook scheme $r$ is random. In the KEM it is *computed*:
 
-$$r = \text{Sample}\bigl(H(\text{public key},\ m)\bigr).$$
+$$
+r = \text{Sample}\bigl(H(\text{public key}, m)\bigr).
+$$
 
 This looks like a strange thing to do; it is the key idea. It means that a
 ciphertext is a deterministic function of $m$. So after the receiver decrypts

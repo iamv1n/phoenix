@@ -122,7 +122,7 @@ made explicitly.
 ## 6. Correct decryption was a matter of luck
 
 The defaults were $N = 503$, $q = 257$, $d_f = 61$, $d_g = 20$, $d_r = 18$.
-Decryption requires every coefficient of $p\,r \star g + f \star m$ to stay
+Decryption requires every coefficient of $p r \star g + f \star m$ to stay
 within $\pm q/2 \approx 128$. Its worst case with those weights is 231.
 
 Typical values are much smaller, so failures would have been rare. But
@@ -216,7 +216,7 @@ your dependencies. Phoenix now declares two, in `pyproject.toml`: NumPy and
 ## 12. The documentation disagreed with the code
 
 The notes defined the public key as $h = g \star f_q$ and encryption as
-$e = p\, r \star h + m$, while the code computed $h = p\, f_q \star g$ and
+$e = p r \star h + m$, while the code computed $h = p f_q \star g$ and
 $e = r \star h + m$. Both conventions are valid and give the same
 ciphertexts, but a reader comparing the two would be lost. The definition of
 an ideal had a typo that changed its meaning, the set of secret polynomials

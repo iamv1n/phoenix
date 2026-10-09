@@ -180,6 +180,7 @@ $ pip install -e ".[dev]"
 $ pytest            # 216 tests, a few seconds
 $ ruff check .
 $ ruff format .
+$ python tools/check_math.py    # maths in docs/blog renders everywhere
 ```
 
 ```
@@ -197,6 +198,7 @@ tests/              pytest suite
 examples/           runnable scripts
 docs/               reference documentation
 blog/               long-form articles
+tools/              documentation checks
 ```
 
 Contributions are welcome: fork, branch, make your change with a test, and

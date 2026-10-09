@@ -165,7 +165,9 @@ The message is back.
 
 Unpack what $f \star e$ actually is:
 
-$$f \star e \;=\; f \star (r \star h + m) \;=\; f \star r \star (3 f_q \star g) + f \star m \;=\; 3\, r \star g + f \star m.$$
+$$
+f \star e = f \star (r \star h + m) = f \star r \star (3 f_q \star g) + f \star m = 3 r \star g + f \star m.
+$$
 
 The $f$ met the $f_q$ buried inside $h$ and they cancelled. What remains is
 built entirely from the four small polynomials. Compute it with **no modular
@@ -184,7 +186,7 @@ Identical to the centered `a`. The values modulo 41 and the true integer
 values agree, because no coefficient was big enough to wrap around.
 
 And once you hold true integers rather than residues modulo 41, you may
-reduce them modulo anything you like. Modulo 3, the term $3\, r \star g$ is
+reduce them modulo anything you like. Modulo 3, the term $3 r \star g$ is
 zero. That leaves $f \star m$, and `fp` strips off the $f$.
 
 The secret is not an exotic operation. It is knowing a multiplier that makes
@@ -255,7 +257,7 @@ every row shown: `phoenix playground`, then **Step through the maths**.
 
 At this size, not at all. An attacker wants a small $f$ such that
 $f \star h$ is three times something small. There are only 210 ways to place
-three $+1$s and two $-1$s in seven slots, so try them all:
+three coefficients $+1$ and two coefficients $-1$ in seven slots, so try them all:
 
 ```console
 $ python examples/06_break_the_toy.py

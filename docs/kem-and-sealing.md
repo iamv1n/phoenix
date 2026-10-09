@@ -41,10 +41,10 @@ Fujisaki–Okamoto-style transform.
 
 1. Sample a random message $m \in T(d_m, d_m)$ with $d_m = \lfloor N/3 \rfloor$.
 2. **Derive** the blinding polynomial from the message and the public key:
-   $r = \text{Sample}\bigl(H(\texttt{blinding},\ H(\text{pk}),\ m)\bigr)$.
+   $r = \text{Sample}\bigl(H(\texttt{blinding}, H(\text{pk}), m)\bigr)$.
 3. Compute $e = r \star h + m \pmod q$ and pack it into bytes: the
    ciphertext $c$.
-4. Output the shared secret $K = H(\texttt{key},\ m,\ c)$.
+4. Output the shared secret $K = H(\texttt{key}, m, c)$.
 
 Step 2 is the heart of it. Because $r$ is a deterministic function of $m$,
 anyone who knows $m$ can recompute the entire ciphertext.
@@ -55,8 +55,8 @@ anyone who knows $m$ can recompute the entire ciphertext.
 2. Check that $m'$ really is in $T(d_m, d_m)$.
 3. Re-derive $r'$ from $m'$, **re-encrypt**, and compare with $c$ byte for
    byte.
-4. If everything matches, output $K = H(\texttt{key},\ m',\ c)$.
-5. Otherwise output $K' = H(\texttt{reject},\ s,\ c)$, where $s$ is a random
+4. If everything matches, output $K = H(\texttt{key}, m', c)$.
+5. Otherwise output $K' = H(\texttt{reject}, s, c)$, where $s$ is a random
    32-byte value stored in the private key.
 
 ### Why this fixes the problems

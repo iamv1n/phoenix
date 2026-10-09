@@ -19,9 +19,9 @@ NTRU was introduced by Hoffstein, Pipher and Silverman in 1996.
 | $N$ | Polynomials have $N$ coefficients; prime | 677 |
 | $p$ | Small modulus; the message lives modulo $p$ | 3 |
 | $q$ | Large modulus; ciphertexts live modulo $q$; coprime to $p$ | 2048 |
-| $d_f$ | $f \in T(d_f + 1,\ d_f)$ | 127 |
-| $d_g$ | $g \in T(d_g,\ d_g)$ | 127 |
-| $d_r$ | $r \in T(d_r,\ d_r)$ | 127 |
+| $d_f$ | $f \in T(d_f + 1, d_f)$ | 127 |
+| $d_g$ | $g \in T(d_g, d_g)$ | 127 |
+| $d_r$ | $r \in T(d_r, d_r)$ | 127 |
 
 ## Key generation
 
@@ -31,7 +31,9 @@ NTRU was introduced by Hoffstein, Pipher and Silverman in 1996.
 3. Pick a random $g \in T(d_g, d_g)$.
 4. Compute
 
-$$h = p \cdot f_q \star g \pmod q.$$
+$$
+h = p \cdot f_q \star g \pmod q.
+$$
 
 The **public key** is $h$. The **private key** is $f$ (with $f_p$, which can
 be recomputed from it).
@@ -41,12 +43,14 @@ factors as a ratio of two small polynomials.
 
 ## Encryption
 
-To encrypt a message polynomial $m$ with coefficients in $\{-1, 0, 1\}$:
+To encrypt a message polynomial $m$ with coefficients in $\lbrace -1, 0, 1 \rbrace$:
 
 1. Pick a random **blinding polynomial** $r \in T(d_r, d_r)$.
 2. Compute
 
-$$e = r \star h + m \pmod q.$$
+$$
+e = r \star h + m \pmod q.
+$$
 
 The term $r \star h$ looks random and hides $m$ completely from anyone who
 cannot undo it.
@@ -56,7 +60,7 @@ cannot undo it.
 Given $e$ and the private key:
 
 1. Compute $a = f \star e \pmod q$.
-2. **Center-lift** $a$: choose its coefficients in $(-q/2,\ q/2]$.
+2. **Center-lift** $a$: choose its coefficients in $(-q/2, q/2]$.
 3. Compute $m = f_p \star a \pmod p$, centered.
 
 ## Why it works
@@ -64,18 +68,25 @@ Given $e$ and the private key:
 Substitute the definition of $e$, then of $h$:
 
 $$
-\begin{aligned}
-a &\equiv f \star e \\
-  &\equiv f \star (r \star h + m) \\
-  &\equiv f \star r \star (p\, f_q \star g) + f \star m \\
-  &\equiv p\, r \star g + f \star m \pmod q,
-\end{aligned}
+a \equiv f \star e \pmod q
+$$
+
+$$
+a \equiv f \star (r \star h + m) \pmod q
+$$
+
+$$
+a \equiv f \star r \star (p f_q \star g) + f \star m \pmod q
+$$
+
+$$
+a \equiv p r \star g + f \star m \pmod q
 $$
 
 using $f \star f_q \equiv 1 \pmod q$.
 
 Now the crucial observation: $r$, $g$, $f$ and $m$ are all small, so the
-polynomial $p\, r \star g + f \star m$, computed over the plain integers, has
+polynomial $p r \star g + f \star m$, computed over the plain integers, has
 small coefficients. If all of them lie in $(-q/2, q/2]$, then reducing modulo
 $q$ and center-lifting changes nothing, and step 2 hands back that integer
 polynomial **exactly**, not merely modulo $q$.
@@ -84,11 +95,15 @@ Once it is an exact integer polynomial we are free to reduce it modulo a
 *different* number, $p$. The first term vanishes because it is a multiple of
 $p$:
 
-$$a \equiv f \star m \pmod p,$$
+$$
+a \equiv f \star m \pmod p,
+$$
 
 and multiplying by $f_p$ removes $f$:
 
-$$f_p \star a \equiv f_p \star f \star m \equiv m \pmod p.$$
+$$
+f_p \star a \equiv f_p \star f \star m \equiv m \pmod p.
+$$
 
 The trick, in one sentence: **$q$ is large enough that the masked value never
 wraps around, so the mask can be removed by reducing modulo $p$.** Without
@@ -98,7 +113,7 @@ which scrambles its residues modulo $p$.
 
 ## Why decryption never fails
 
-Everything hinges on $p\, r \star g + f \star m$ fitting in $(-q/2, q/2]$.
+Everything hinges on $p r \star g + f \star m$ fitting in $(-q/2, q/2]$.
 Bound each coefficient:
 
 - A coefficient of $r \star g$ is a sum of products $r_i g_j$. At most
@@ -108,7 +123,9 @@ Bound each coefficient:
 
 Hence
 
-$$\bigl|\,p\, r \star g + f \star m\,\bigr|_\infty \;\le\; 2p\,\min(d_r, d_g) + 2d_f + 1.$$
+$$
+\lVert p r \star g + f \star m \rVert_\infty \le 2p \min(d_r, d_g) + 2d_f + 1.
+$$
 
 For `phoenix677` that is $6 \cdot 127 + 255 = 1017$, and the limit
 $\lfloor (q-1)/2 \rfloor$ is $1023$. The bound holds for *every* possible
@@ -141,39 +158,59 @@ Run it yourself with
 
 **Key generation.** Choose
 
-$$f = x^6 - x^4 + x^3 + x^2 - 1, \qquad g = x^6 + x^4 - x^2 - x.$$
+$$
+f = x^6 - x^4 + x^3 + x^2 - 1, \qquad g = x^6 + x^4 - x^2 - x.
+$$
 
 The inverses of $f$ are
 
-$$f_p = x^6 + 2x^5 + x^3 + x^2 + x + 1,$$
+$$
+f_p = x^6 + 2x^5 + x^3 + x^2 + x + 1,
+$$
 
-$$f_q = 8x^6 + 26x^5 + 31x^4 + 21x^3 + 40x^2 + 2x + 37,$$
+
+
+$$
+f_q = 8x^6 + 26x^5 + 31x^4 + 21x^3 + 40x^2 + 2x + 37,
+$$
 
 and the public key is
 
-$$h = 3 f_q \star g = 19x^6 + 38x^5 + 6x^4 + 32x^3 + 24x^2 + 37x + 8 \pmod{41}.$$
+$$
+h = 3 f_q \star g = 19x^6 + 38x^5 + 6x^4 + 32x^3 + 24x^2 + 37x + 8 \pmod{41}.
+$$
 
 **Encryption.** With message and blinding polynomial
 
-$$m = -x^5 + x^3 + x^2 - x + 1, \qquad r = x^6 - x^5 + x - 1,$$
+$$
+m = -x^5 + x^3 + x^2 - x + 1, \qquad r = x^6 - x^5 + x - 1,
+$$
 
 the ciphertext is
 
-$$e = r \star h + m = 31x^6 + 19x^5 + 4x^4 + 2x^3 + 40x^2 + 3x + 25 \pmod{41}.$$
+$$
+e = r \star h + m = 31x^6 + 19x^5 + 4x^4 + 2x^3 + 40x^2 + 3x + 25 \pmod{41}.
+$$
 
 **Decryption.** Multiply by $f$ and center-lift:
 
-$$a = f \star e = x^6 + 10x^5 - 8x^4 - x^3 - x^2 + x - 1.$$
+$$
+a = f \star e = x^6 + 10x^5 - 8x^4 - x^3 - x^2 + x - 1.
+$$
 
-Computing $3\, r \star g + f \star m$ over the integers gives the very same
+Computing $3 r \star g + f \star m$ over the integers gives the very same
 polynomial. Its largest coefficient is 10, far below the limit of 20, so
 nothing wrapped. Reduce modulo 3:
 
-$$b = x^6 + x^5 + x^4 - x^3 - x^2 + x - 1,$$
+$$
+b = x^6 + x^5 + x^4 - x^3 - x^2 + x - 1,
+$$
 
 and multiply by $f_p$:
 
-$$f_p \star b = -x^5 + x^3 + x^2 - x + 1 = m. \quad\checkmark$$
+$$
+f_p \star b = -x^5 + x^3 + x^2 - x + 1 = m. \quad\checkmark
+$$
 
 The same thing in code:
 

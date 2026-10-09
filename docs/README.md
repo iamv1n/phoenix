@@ -17,3 +17,24 @@ every snippet in these pages has a runnable twin in [`examples/`](../examples).
 
 > **Phoenix is a learning project.** It is unaudited and not constant time.
 > Read [Security](security.md) before using it for anything that matters.
+
+## Rendering the maths
+
+Formulas are written as `$inline$` and as display blocks fenced by `$$` on
+their own lines. That renders as-is on GitHub, in the VS Code Markdown
+preview, and in any site generator with a maths plugin (MkDocs with
+`pymdownx.arithmatex`, Docusaurus with `remark-math`, markdown-it with
+KaTeX).
+
+For a plain HTML page, load MathJax and tell it that single dollars delimit
+inline maths:
+
+```html
+<script>
+  MathJax = { tex: { inlineMath: [["$", "$"]], displayMath: [["$$", "$$"]] } };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+```
+
+The formulas stick to a subset of LaTeX that no Markdown parser mangles (no
+`\,`, `\{`, `\\` and so on). `python tools/check_math.py` enforces it.

@@ -1,0 +1,9 @@
+# GitHub Pages (Jekyll) settings for https://iamv1n.github.io/phoenix/
+title: Phoenix
+description: An educational NTRU lattice-based encryption library
+exclude:
+  - src
+  - tests
+  - tools
+  - pyproject.toml
+  - .venv

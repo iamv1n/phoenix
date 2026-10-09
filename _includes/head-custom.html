@@ -1,0 +1,33 @@
+<!-- Typeset maths on the GitHub Pages site. kramdown turns $$ blocks into
+     \[ ... \] and leaves $inline$ maths untouched, so MathJax handles both. -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [["$", "$"], ["\\(", "\\)"]],
+      displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+    },
+    options: { skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"] },
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<!-- GitHub renders "> [!WARNING]" as a callout; Jekyll shows the marker as
+     text. Turn it into a labelled box here. -->
+<style>
+  blockquote.callout { border-left: 4px solid #9a6700; background: #fff8c5; color: #1f2328; padding: 10px 14px; }
+  blockquote.callout .callout-title { font-weight: 600; color: #9a6700; display: block; margin-bottom: 4px; }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("blockquote > p:first-child").forEach(function (p) {
+      var match = p.innerHTML.match(/^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*(<br\s*\/?>)?/);
+      if (!match) return;
+      p.innerHTML = p.innerHTML.slice(match[0].length);
+      var title = document.createElement("span");
+      title.className = "callout-title";
+      title.textContent = match[1].charAt(0) + match[1].slice(1).toLowerCase();
+      p.parentNode.classList.add("callout");
+      p.parentNode.insertBefore(title, p);
+    });
+  });
+</script>
